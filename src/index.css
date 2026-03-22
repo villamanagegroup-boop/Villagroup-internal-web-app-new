@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    @apply text-gray-800;
+    margin: 0;
+    background: linear-gradient(135deg, #f0f4f8 0%, #e8f0f9 45%, #eff0ff 100%);
+    min-height: 100svh;
+  }
+
+  #root {
+    min-height: 100svh;
+  }
+}
+
+@layer components {
+  .stat-card {
+    @apply bg-white/65 backdrop-blur-sm rounded-xl p-4 border border-white/70 shadow-[0_1px_4px_rgba(0,0,0,0.07),0_0_0_1px_rgba(255,255,255,0.6)];
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-navy to-navy-500 text-white font-medium px-4 py-2 rounded-lg shadow-sm hover:shadow-md hover:brightness-105 transition-all;
+  }
+
+  .btn-secondary {
+    @apply bg-gradient-to-r from-gold to-gold-500 text-white font-medium px-4 py-2 rounded-lg shadow-sm hover:shadow-md hover:brightness-105 transition-all;
+  }
+
+  .page-header {
+    @apply bg-white/80 backdrop-blur-md border-b border-slate-200/60 px-6 py-4 shrink-0;
+  }
+
+  .toolbar {
+    @apply bg-white/60 backdrop-blur-sm border-b border-slate-200/40 px-6 py-2.5 shrink-0;
+  }
+
+  .section-label {
+    @apply text-[11px] font-semibold uppercase tracking-widest text-gray-400 mb-4;
+  }
+
+  .table-container {
+    @apply bg-white/70 backdrop-blur-sm rounded-xl border border-white/60 shadow-[0_1px_4px_rgba(0,0,0,0.06)] overflow-hidden;
+  }
+
+  .badge-green {
+    @apply bg-green-100 text-green-700 text-xs font-medium px-2 py-0.5 rounded-full;
+  }
+
+  .badge-amber {
+    @apply bg-amber-100 text-amber-700 text-xs font-medium px-2 py-0.5 rounded-full;
+  }
+
+  .badge-red {
+    @apply bg-red-100 text-red-700 text-xs font-medium px-2 py-0.5 rounded-full;
+  }
+
+  .badge-blue {
+    @apply bg-navy-50 text-navy text-xs font-medium px-2 py-0.5 rounded-full;
+  }
+
+  .badge-gray {
+    @apply bg-gray-100 text-gray-600 text-xs font-medium px-2 py-0.5 rounded-full;
+  }
+}
