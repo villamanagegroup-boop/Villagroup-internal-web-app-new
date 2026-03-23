@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { format, parseISO } from 'date-fns'
-import { Download, RefreshCw, TrendingUp, DollarSign, Users, Building2 } from 'lucide-react'
+import { Download, RefreshCw, TrendingUp, DollarSign, Users, Building2, Printer } from 'lucide-react'
 import { useReports } from '../hooks/useReports'
 
 function fmtMoney(n) { return `$${Number(n || 0).toLocaleString()}` }
@@ -104,6 +104,10 @@ export default function Reports() {
           <button onClick={handleRefresh} disabled={refreshing || loading}
             className="flex items-center gap-1.5 text-sm text-gray-500 border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50">
             <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} /> Refresh
+          </button>
+          <button onClick={() => window.print()}
+            className="flex items-center gap-1.5 text-sm text-gray-500 border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+            <Printer size={14} /> Print / PDF
           </button>
           <button
             onClick={() => {

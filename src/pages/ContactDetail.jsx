@@ -3,8 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { format, parseISO, differenceInDays, isValid } from 'date-fns'
 import {
   ArrowLeft, Phone, Mail, ExternalLink,
-  AlertTriangle, Clock, Edit2, Check, X,
+  AlertTriangle, Clock, Edit2, Check, X, Trash2, Archive,
 } from 'lucide-react'
+import { supabase } from '../lib/supabase'
 import { useContactDetail } from '../hooks/useContactDetail'
 import EditContactPanel from '../components/contacts/EditContactPanel'
 import StatusBadge from '../components/placements/StatusBadge'
@@ -77,10 +78,10 @@ function EditableNotes({ value, onSave }) {
   )
 }
 
-function SidebarAction({ icon, label, onClick, disabled, className = '' }) {
+function SidebarAction({ icon, label, onClick, disabled, className = 'text-gray-600 hover:bg-slate-100 hover:text-gray-800' }) {
   return (
     <button onClick={onClick} disabled={disabled}
-      className={`w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-gray-600 hover:bg-slate-100 hover:text-gray-800 ${className}`}>
+      className={`w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${className}`}>
       {icon}{label}
     </button>
   )
@@ -114,6 +115,30 @@ export default function ContactDetail() {
   const [markingContact, setMarkingContact] = useState(false)
   const [activeSection, setActiveSection] = useState('sec-info')
   const [showEdit, setShowEdit] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState(null)
+  const [archiving, setArchiving] = useState(false)
+
+  async function handleArchive() {
+    setArchiving(true)
+    await supabase.from('contacts').update({ is_archived: true }).eq('id', contact.id)
+    navigate('/contacts')
+  }
+
+  async function handleDelete() {
+    setDeleting(true)
+    setDeleteError(null)
+    const { error } = await supabase.from('contacts').delete().eq('id', contact.id)
+    if (error) {
+      setDeleteError(error.message.includes('foreign key') || error.message.includes('violates')
+        ? 'Cannot delete — this contact is linked to placements or invoices. Try archiving instead.'
+        : error.message)
+      setDeleting(false)
+    } else {
+      navigate('/contacts')
+    }
+  }
 
   async function handleMarkContact() {
     setMarkingContact(true)
@@ -199,6 +224,28 @@ export default function ContactDetail() {
           {contact.email && <SidebarAction icon={<Mail size={13} />} label="Email" onClick={() => window.location.href = `mailto:${contact.email}`} />}
           <SidebarAction icon={<Clock size={13} />} label={markingContact ? 'Logging...' : 'Log Contact'} onClick={handleMarkContact} disabled={markingContact} />
           <SidebarAction icon={<Edit2 size={13} />} label="Edit Contact" onClick={() => setShowEdit(true)} />
+          <SidebarAction icon={<Archive size={13} />} label={archiving ? 'Archiving...' : 'Archive'} onClick={handleArchive} disabled={archiving} className="text-amber-600 hover:bg-amber-50 hover:text-amber-700" />
+          {!confirmDelete
+            ? <SidebarAction icon={<Trash2 size={13} />} label="Delete Contact" onClick={() => setConfirmDelete(true)} className="text-red-400 hover:bg-red-50 hover:text-red-600" />
+            : (
+              <div className="px-3 py-1.5 space-y-1.5">
+                <p className="text-[11px] text-red-500 font-medium">Delete this contact?</p>
+                {deleteError && (
+                  <p className="text-[10px] text-red-500 bg-red-50 rounded px-2 py-1 leading-snug">{deleteError}</p>
+                )}
+                <div className="flex gap-1.5">
+                  <button onClick={handleDelete} disabled={deleting}
+                    className="flex-1 py-1 bg-red-500 text-white rounded text-[11px] font-medium hover:bg-red-600 disabled:opacity-50">
+                    {deleting ? '...' : 'Yes, delete'}
+                  </button>
+                  <button onClick={() => { setConfirmDelete(false); setDeleteError(null) }}
+                    className="flex-1 py-1 bg-gray-100 text-gray-600 rounded text-[11px]">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )
+          }
         </div>
 
         <nav className="px-3 py-3 space-y-0.5 flex-1">

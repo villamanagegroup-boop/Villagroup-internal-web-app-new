@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { format, parseISO } from 'date-fns'
 import {
   ArrowLeft, Phone, Mail, ExternalLink,
-  Edit2, LogOut, Calendar, ClipboardList, Wrench,
+  Edit2, LogOut, Calendar, ClipboardList, Wrench, Archive,
 } from 'lucide-react'
 import { usePlacementDetail } from '../hooks/usePlacementDetail'
 import { supabase } from '../lib/supabase'
@@ -100,6 +100,14 @@ export default function PlacementDetail() {
   const [activeSection, setActiveSection] = useState('sec-overview')
   const [showEdit, setShowEdit] = useState(false)
   const [showDischarge, setShowDischarge] = useState(false)
+  const [confirmArchive, setConfirmArchive] = useState(false)
+  const [archiving, setArchiving] = useState(false)
+
+  async function handleArchive() {
+    setArchiving(true)
+    await updateStatus('archived')
+    navigate('/placements')
+  }
   const [showExtension, setShowExtension] = useState(false)
   const [showCondition, setShowCondition] = useState(null)
   const [showMaintenance, setShowMaintenance] = useState(false)
@@ -211,6 +219,24 @@ export default function PlacementDetail() {
           <SidebarAction icon={<ClipboardList size={13} />} label="Move-out Report" onClick={() => setShowCondition('move_out')} />
           <SidebarAction icon={<Wrench size={13} />} label="Log Maintenance" onClick={() => setShowMaintenance(true)} disabled={!unit} />
           <SidebarAction icon={<LogOut size={13} />} label="Discharge" onClick={() => setShowDischarge(true)} disabled={!isActive} danger />
+          {!confirmArchive
+            ? <SidebarAction icon={<Archive size={13} />} label="Archive" onClick={() => setConfirmArchive(true)} danger />
+            : (
+              <div className="px-3 py-1.5 space-y-1.5">
+                <p className="text-[11px] text-red-500 font-medium">Archive this placement?</p>
+                <div className="flex gap-1.5">
+                  <button onClick={handleArchive} disabled={archiving}
+                    className="flex-1 py-1 bg-red-500 text-white rounded text-[11px] font-medium hover:bg-red-600 disabled:opacity-50">
+                    {archiving ? '...' : 'Yes, archive'}
+                  </button>
+                  <button onClick={() => setConfirmArchive(false)}
+                    className="flex-1 py-1 bg-gray-100 text-gray-600 rounded text-[11px]">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )
+          }
         </div>
 
         <nav className="px-3 py-3 space-y-0.5 flex-1">

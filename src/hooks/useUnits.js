@@ -12,6 +12,7 @@ export function useUnits() {
     const { data, error } = await supabase
       .from('units')
       .select('*, photos:unit_photos(id, url, sort_order)')
+      .eq('is_archived', false)
       .order('created_at', { ascending: false })
 
     if (error) setError(error.message)

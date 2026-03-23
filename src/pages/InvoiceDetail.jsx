@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { format, parseISO } from 'date-fns'
-import { ArrowLeft, CheckCircle, Send, Trash2, Plus, Phone, Mail, ExternalLink } from 'lucide-react'
+import { ArrowLeft, CheckCircle, Send, Trash2, Plus, Phone, Mail, ExternalLink, Archive } from 'lucide-react'
+import { supabase } from '../lib/supabase'
 import { useInvoiceDetail } from '../hooks/useInvoiceDetail'
 import InvoiceStatusBadge from '../components/billing/InvoiceStatusBadge'
 
@@ -32,6 +33,8 @@ function SidebarAction({ icon, label, onClick, disabled, variant = 'default' }) 
     default: 'text-gray-600 hover:bg-slate-100 hover:text-gray-800',
     primary: 'text-navy hover:bg-navy/8',
     success: 'text-green-600 hover:bg-green-50',
+    danger: 'text-red-400 hover:bg-red-50 hover:text-red-600',
+    warning: 'text-amber-600 hover:bg-amber-50 hover:text-amber-700',
   }
   return (
     <button onClick={onClick} disabled={disabled}
@@ -64,6 +67,22 @@ export default function InvoiceDetail() {
   const [saving, setSaving] = useState(false)
   const [actionLoading, setActionLoading] = useState(null)
   const [activeSection, setActiveSection] = useState('sec-summary')
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [archiving, setArchiving] = useState(false)
+
+  async function handleArchiveInvoice() {
+    setArchiving(true)
+    await supabase.from('invoices').update({ is_archived: true }).eq('id', id)
+    navigate('/billing')
+  }
+
+  async function handleDeleteInvoice() {
+    setDeleting(true)
+    await supabase.from('invoice_line_items').delete().eq('invoice_id', id)
+    await supabase.from('invoices').delete().eq('id', id)
+    navigate('/billing')
+  }
 
   async function handleAddItem() {
     if (!newItem.description || !newItem.unit_price) return
@@ -162,6 +181,25 @@ export default function InvoiceDetail() {
               <CheckCircle size={13} /> Paid {fmt(invoice.date_paid)}
             </div>
           )}
+          <SidebarAction icon={<Archive size={13} />} label={archiving ? 'Archiving...' : 'Archive Invoice'} onClick={handleArchiveInvoice} disabled={archiving} variant="warning" />
+          {!confirmDelete
+            ? <SidebarAction icon={<Trash2 size={13} />} label="Delete Invoice" onClick={() => setConfirmDelete(true)} variant="danger" />
+            : (
+              <div className="px-3 py-1.5 space-y-1.5">
+                <p className="text-[11px] text-red-500 font-medium">Delete this invoice?</p>
+                <div className="flex gap-1.5">
+                  <button onClick={handleDeleteInvoice} disabled={deleting}
+                    className="flex-1 py-1 bg-red-500 text-white rounded text-[11px] font-medium hover:bg-red-600 disabled:opacity-50">
+                    {deleting ? '...' : 'Yes, delete'}
+                  </button>
+                  <button onClick={() => setConfirmDelete(false)}
+                    className="flex-1 py-1 bg-gray-100 text-gray-600 rounded text-[11px]">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )
+          }
         </div>
 
         <nav className="px-3 py-3 space-y-0.5 flex-1">

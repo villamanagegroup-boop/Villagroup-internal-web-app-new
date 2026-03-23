@@ -21,6 +21,7 @@ export function useBilling() {
           policyholder:policyholder_id (name)
         )
       `)
+      .eq('is_archived', false)
       .order('created_at', { ascending: false })
 
     if (error) { setError(error.message); setLoading(false); return }

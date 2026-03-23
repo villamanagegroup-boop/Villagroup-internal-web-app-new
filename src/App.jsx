@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { AuthProvider, useAuth } from './context/AuthContext'
 import Layout from './components/layout/Layout'
 import Login from './pages/Login'
+import ResetPassword from './pages/ResetPassword'
 import SetupAccount from './pages/SetupAccount'
 import Dashboard from './pages/Dashboard'
 import Placements from './pages/Placements'
@@ -13,6 +14,7 @@ import ContactDetail from './pages/ContactDetail'
 import Billing from './pages/Billing'
 import InvoiceDetail from './pages/InvoiceDetail'
 import Reports from './pages/Reports'
+import Archive from './pages/Archive'
 import ResourceHub from './pages/ResourceHub'
 import Settings from './pages/Settings'
 
@@ -40,6 +42,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/setup-account" element={<SetupAccount />} />
           <Route path="/" element={<RequireAuth><Layout /></RequireAuth>}>
             <Route index element={<Navigate to="/dashboard" replace />} />
@@ -53,6 +56,7 @@ export default function App() {
             <Route path="billing" element={<Billing />} />
             <Route path="billing/:id" element={<InvoiceDetail />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="archive" element={<Archive />} />
             <Route path="resource-hub" element={<ResourceHub />} />
             <Route path="settings" element={<Settings />} />
           </Route>

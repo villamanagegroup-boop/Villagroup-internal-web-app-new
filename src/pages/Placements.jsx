@@ -5,7 +5,7 @@ import { parseISO, format } from 'date-fns'
 import { usePlacements } from '../hooks/usePlacements'
 import NewPlacementModal from '../components/placements/NewPlacementModal'
 
-const STATUSES = ['all', 'active', 'pending', 'closed']
+const STATUSES = ['all', 'active', 'pending', 'closed', 'archived']
 
 const STATUS_STYLES = {
   active: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200',
@@ -61,10 +61,14 @@ export default function Placements() {
     setSort(s => ({ field, dir: s.field === field && s.dir === 'asc' ? 'desc' : 'asc' }))
   }
 
+  const nonArchived = useMemo(() => placements.filter(p => p.status !== 'archived'), [placements])
+
   const filtered = useMemo(() => {
-    const list = status === 'all' ? placements : placements.filter(p => p.status === status)
+    const list = status === 'all'
+      ? nonArchived
+      : placements.filter(p => p.status === status)
     return sortList(list, sort)
-  }, [placements, status, sort])
+  }, [placements, nonArchived, status, sort])
 
   return (
     <div className="flex flex-col h-full">
@@ -72,7 +76,7 @@ export default function Placements() {
       <div className="page-header flex items-center justify-between">
         <div>
           <h1 className="text-lg font-semibold text-gray-900">Placements</h1>
-          <p className="text-sm text-gray-400 mt-0.5">{placements.length} total</p>
+          <p className="text-sm text-gray-400 mt-0.5">{nonArchived.length} total</p>
         </div>
         <button
           onClick={() => setShowPanel(true)}
@@ -90,7 +94,7 @@ export default function Placements() {
               className={`px-3 py-1.5 rounded-md text-sm font-medium capitalize transition-colors ${
                 status === s ? 'bg-navy/8 text-navy' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50/80'
               }`}>
-              {s === 'all' ? `All (${placements.length})` : s}
+              {s === 'all' ? `All (${nonArchived.length})` : s === 'archived' ? `Archived (${placements.filter(p => p.status === 'archived').length})` : s}
             </button>
           ))}
         </div>

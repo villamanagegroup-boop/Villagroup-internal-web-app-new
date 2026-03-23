@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, Users, Building2, BookUser, Receipt, BarChart2, BookOpen, LogOut, Settings } from 'lucide-react'
+import { LayoutDashboard, Users, Building2, BookUser, Receipt, BarChart2, BookOpen, LogOut, Settings, Archive } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 
 const NAV = [
@@ -9,6 +9,7 @@ const NAV = [
   { to: '/contacts', icon: BookUser, label: 'Contacts' },
   { to: '/billing', icon: Receipt, label: 'Billing' },
   { to: '/reports', icon: BarChart2, label: 'Reports' },
+  { to: '/archive', icon: Archive, label: 'Archive' },
   { to: '/resource-hub', icon: BookOpen, label: 'Resource Hub' },
 ]
 

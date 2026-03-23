@@ -15,6 +15,7 @@ export function useContacts(types) {
     let query = supabase
       .from('contacts')
       .select('*')
+      .eq('is_archived', false)
       .order('name', { ascending: true })
 
     if (Array.isArray(types) && types.length > 0) {
