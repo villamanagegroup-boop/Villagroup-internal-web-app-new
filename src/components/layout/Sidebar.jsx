@@ -45,7 +45,7 @@ export default function Sidebar() {
 
   return (
     <aside
-      className="w-[220px] shrink-0 flex flex-col h-screen sticky top-0 z-40"
+      className="w-[220px] shrink-0 hidden md:flex flex-col h-screen sticky top-0 z-40"
       style={{ background: 'linear-gradient(180deg, #1B3A6B 0%, #0d1f3c 100%)' }}
     >
       {/* Brand */}

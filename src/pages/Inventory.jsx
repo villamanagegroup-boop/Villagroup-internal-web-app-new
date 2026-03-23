@@ -82,45 +82,95 @@ export default function Inventory() {
           <p className="text-sm text-gray-400 mt-0.5">{units.length} units</p>
         </div>
         <button onClick={() => setShowPanel(true)}
-          className="flex items-center gap-1.5 bg-gradient-to-r from-navy to-navy-500 text-white text-sm font-medium px-3.5 py-2 rounded-lg shadow-sm hover:shadow-md hover:brightness-105 transition-all">
-          <Plus size={15} /> New Unit
+          className="flex items-center gap-1.5 bg-gradient-to-r from-navy to-navy-500 text-white text-sm font-medium px-3 py-2 rounded-lg shadow-sm hover:shadow-md hover:brightness-105 transition-all">
+          <Plus size={15} />
+          <span className="hidden sm:inline">New Unit</span>
         </button>
       </div>
 
       {/* Toolbar */}
-      <div className="toolbar flex items-center gap-2 flex-wrap">
-        <div className="flex items-center gap-0.5">
-          {STATUSES.map(s => (
-            <button key={s} onClick={() => setFilters(f => ({ ...f, status: s }))}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium capitalize transition-colors ${
-                filters.status === s ? 'bg-navy/8 text-navy' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50/80'
-              }`}>
-              {s === 'all' ? `All (${units.length})` : s}
-            </button>
-          ))}
+      <div className="toolbar space-y-2">
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
+          <div className="flex items-center gap-0.5 min-w-max">
+            {STATUSES.map(s => (
+              <button key={s} onClick={() => setFilters(f => ({ ...f, status: s }))}
+                className={`px-3 py-1.5 rounded-md text-sm font-medium capitalize transition-colors whitespace-nowrap ${
+                  filters.status === s ? 'bg-navy/8 text-navy' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50/80'
+                }`}>
+                {s === 'all' ? `All (${units.length})` : s}
+              </button>
+            ))}
+          </div>
+          <div className="ml-auto hidden md:flex items-center gap-3 shrink-0">
+            {error && <span className="text-xs text-red-600">{error} <button onClick={refetch} className="underline">Retry</button></span>}
+            <select value={filters.beds} onChange={e => setFilters(f => ({ ...f, beds: e.target.value }))}
+              className="text-sm border border-gray-200/80 rounded-lg px-3 py-1.5 bg-white/70 text-gray-700 focus:outline-none focus:ring-2 focus:ring-navy/30">
+              <option value="">Any beds</option>
+              {['1','2','3','4','5+'].map(b => <option key={b} value={b}>{b} bd</option>)}
+            </select>
+            <label className="flex items-center gap-1.5 text-sm text-gray-600 cursor-pointer select-none">
+              <input type="checkbox" checked={filters.petFriendly} onChange={e => setFilters(f => ({ ...f, petFriendly: e.target.checked }))}
+                className="rounded border-gray-300 text-navy" />
+              Pet friendly
+            </label>
+            <label className="flex items-center gap-1.5 text-sm text-gray-600 cursor-pointer select-none">
+              <input type="checkbox" checked={filters.aleEligible} onChange={e => setFilters(f => ({ ...f, aleEligible: e.target.checked }))}
+                className="rounded border-gray-300 text-navy" />
+              ALE eligible
+            </label>
+          </div>
         </div>
-        <div className="ml-auto flex items-center gap-3">
-          {error && <span className="text-xs text-red-600">{error} <button onClick={refetch} className="underline">Retry</button></span>}
+        {/* Mobile filters row */}
+        <div className="md:hidden flex items-center gap-2">
           <select value={filters.beds} onChange={e => setFilters(f => ({ ...f, beds: e.target.value }))}
-            className="text-sm border border-gray-200/80 rounded-lg px-3 py-1.5 bg-white/70 text-gray-700 focus:outline-none focus:ring-2 focus:ring-navy/30">
+            className="text-sm border border-gray-200/80 rounded-lg px-2.5 py-1.5 bg-white/70 text-gray-700 focus:outline-none focus:ring-2 focus:ring-navy/30">
             <option value="">Any beds</option>
             {['1','2','3','4','5+'].map(b => <option key={b} value={b}>{b} bd</option>)}
           </select>
           <label className="flex items-center gap-1.5 text-sm text-gray-600 cursor-pointer select-none">
             <input type="checkbox" checked={filters.petFriendly} onChange={e => setFilters(f => ({ ...f, petFriendly: e.target.checked }))}
               className="rounded border-gray-300 text-navy" />
-            Pet friendly
+            Pets
           </label>
           <label className="flex items-center gap-1.5 text-sm text-gray-600 cursor-pointer select-none">
             <input type="checkbox" checked={filters.aleEligible} onChange={e => setFilters(f => ({ ...f, aleEligible: e.target.checked }))}
               className="rounded border-gray-300 text-navy" />
-            ALE eligible
+            ALE
           </label>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="flex-1 overflow-auto p-6">
+      {/* Mobile cards */}
+      <div className="md:hidden flex-1 overflow-auto p-4 space-y-2">
+        {loading
+          ? Array(4).fill(0).map((_, i) => <div key={i} className="h-20 bg-white rounded-xl animate-pulse border border-gray-100" />)
+          : filtered.length === 0
+          ? <p className="text-center text-sm text-gray-400 py-12">No units match your filters.</p>
+          : filtered.map(u => (
+            <div key={u.id} onClick={() => navigate(`/inventory/${u.id}`)}
+              className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 cursor-pointer active:bg-gray-50 transition-colors">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-semibold text-gray-900 truncate">{u.property_name}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{u.city}, {u.state} · {u.bedrooms}bd/{u.bathrooms}ba</p>
+                </div>
+                <span className={`px-2 py-0.5 rounded-md text-xs font-medium capitalize shrink-0 ${UNIT_STATUS_STYLES[u.status] || UNIT_STATUS_STYLES.inactive}`}>
+                  {u.status}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 mt-2">
+                <span className="text-xs font-mono text-gray-400">{u.unit_id}</span>
+                {u.ale_eligible && <span className="px-1.5 py-0.5 bg-navy/10 text-navy text-xs rounded font-medium">ALE</span>}
+                {u.pet_friendly && <span className="px-1.5 py-0.5 bg-amber-50 text-amber-700 text-xs rounded font-medium">Pet</span>}
+                {u.accessibility && <span className="px-1.5 py-0.5 bg-purple-50 text-purple-700 text-xs rounded font-medium">ADA</span>}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden md:block flex-1 overflow-auto p-6">
         <div className="table-container">
           <table className="w-full text-sm">
             <thead>

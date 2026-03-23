@@ -219,47 +219,77 @@ export default function Tasks() {
         </div>
         <button
           onClick={() => { setEditTask(null); setShowForm(true) }}
-          className="flex items-center gap-1.5 bg-gradient-to-r from-navy to-navy-500 text-white text-sm font-medium px-3.5 py-2 rounded-lg shadow-sm hover:shadow-md hover:brightness-105 transition-all"
+          className="flex items-center gap-1.5 bg-gradient-to-r from-navy to-navy-500 text-white text-sm font-medium px-3 py-2 rounded-lg shadow-sm hover:shadow-md hover:brightness-105 transition-all"
         >
-          <Plus size={15} /> New Task
+          <Plus size={15} />
+          <span className="hidden sm:inline">New Task</span>
         </button>
       </div>
 
       {/* Toolbar */}
-      <div className="toolbar flex items-center gap-3 flex-wrap">
-        <div className="flex items-center gap-0.5">
-          {STATUS_TABS.map(t => (
+      <div className="toolbar space-y-2">
+        <div className="flex items-center gap-2">
+          <div className="overflow-x-auto scrollbar-none flex-1">
+            <div className="flex items-center gap-0.5 min-w-max">
+              {STATUS_TABS.map(t => (
+                <button
+                  key={t.id}
+                  onClick={() => setStatusTab(t.id)}
+                  className={`px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap transition-colors ${
+                    statusTab === t.id ? 'bg-navy/8 text-navy' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  {t.label}
+                  <span className={`ml-1.5 text-xs ${statusTab === t.id ? 'text-navy/60' : 'text-gray-400'}`}>
+                    {counts[t.id]}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="hidden md:flex items-center gap-2 shrink-0">
             <button
-              key={t.id}
-              onClick={() => setStatusTab(t.id)}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap transition-colors ${
-                statusTab === t.id ? 'bg-navy/8 text-navy' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+              onClick={() => setMyTasks(v => !v)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                myTasks ? 'bg-navy text-white border-navy' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
               }`}
             >
-              {t.label}
-              <span className={`ml-1.5 text-xs ${statusTab === t.id ? 'text-navy/60' : 'text-gray-400'}`}>
-                {counts[t.id]}
-              </span>
+              My Tasks
             </button>
-          ))}
+            <select
+              value={categoryFilter}
+              onChange={e => setCategoryFilter(e.target.value)}
+              className="text-sm border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-navy/30 text-gray-600"
+            >
+              <option value="">All Categories</option>
+              <option value="placement">Placement</option>
+              <option value="contact">Contact</option>
+              <option value="inventory">Inventory</option>
+              <option value="billing">Billing</option>
+              <option value="general">General</option>
+            </select>
+            <div className="relative">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="text" value={search} onChange={e => setSearch(e.target.value)}
+                placeholder="Search tasks..."
+                className="pl-8 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg bg-white/70 focus:outline-none focus:ring-2 focus:ring-navy/30 w-48" />
+            </div>
+          </div>
         </div>
-
-        <div className="ml-auto flex items-center gap-2">
+        {/* Mobile filters */}
+        <div className="md:hidden flex items-center gap-2">
           <button
             onClick={() => setMyTasks(v => !v)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-              myTasks
-                ? 'bg-navy text-white border-navy'
-                : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+            className={`px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+              myTasks ? 'bg-navy text-white border-navy' : 'bg-white text-gray-600 border-gray-200'
             }`}
           >
-            My Tasks
+            Mine
           </button>
-
           <select
             value={categoryFilter}
             onChange={e => setCategoryFilter(e.target.value)}
-            className="text-sm border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-navy/30 text-gray-600"
+            className="text-sm border border-gray-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-navy/30 text-gray-600 flex-1"
           >
             <option value="">All Categories</option>
             <option value="placement">Placement</option>
@@ -268,16 +298,11 @@ export default function Tasks() {
             <option value="billing">Billing</option>
             <option value="general">General</option>
           </select>
-
-          <div className="relative">
+          <div className="relative flex-1">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Search tasks..."
-              className="pl-8 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg bg-white/70 focus:outline-none focus:ring-2 focus:ring-navy/30 w-48"
-            />
+            <input type="text" value={search} onChange={e => setSearch(e.target.value)}
+              placeholder="Search..."
+              className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg bg-white/70 focus:outline-none focus:ring-2 focus:ring-navy/30" />
           </div>
         </div>
       </div>

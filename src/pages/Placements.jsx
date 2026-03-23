@@ -80,31 +80,61 @@ export default function Placements() {
         </div>
         <button
           onClick={() => setShowPanel(true)}
-          className="flex items-center gap-1.5 bg-gradient-to-r from-navy to-navy-500 text-white text-sm font-medium px-3.5 py-2 rounded-lg shadow-sm hover:shadow-md hover:brightness-105 transition-all"
+          className="flex items-center gap-1.5 bg-gradient-to-r from-navy to-navy-500 text-white text-sm font-medium px-3 py-2 rounded-lg shadow-sm hover:shadow-md hover:brightness-105 transition-all"
         >
-          <Plus size={15} /> New Placement
+          <Plus size={15} />
+          <span className="hidden sm:inline">New Placement</span>
         </button>
       </div>
 
       {/* Toolbar */}
-      <div className="toolbar flex items-center gap-2">
-        <div className="flex items-center gap-0.5">
-          {STATUSES.map(s => (
-            <button key={s} onClick={() => setStatus(s)}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium capitalize transition-colors ${
-                status === s ? 'bg-navy/8 text-navy' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50/80'
-              }`}>
-              {s === 'all' ? `All (${nonArchived.length})` : s === 'archived' ? `Archived (${placements.filter(p => p.status === 'archived').length})` : s}
-            </button>
-          ))}
-        </div>
-        <div className="ml-auto flex items-center gap-2">
-          {error && <span className="text-xs text-red-600">{error} <button onClick={refetch} className="underline">Retry</button></span>}
+      <div className="toolbar">
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
+          <div className="flex items-center gap-0.5 min-w-max">
+            {STATUSES.map(s => (
+              <button key={s} onClick={() => setStatus(s)}
+                className={`px-3 py-1.5 rounded-md text-sm font-medium capitalize transition-colors whitespace-nowrap ${
+                  status === s ? 'bg-navy/8 text-navy' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50/80'
+                }`}>
+                {s === 'all' ? `All (${nonArchived.length})` : s === 'archived' ? `Archived (${placements.filter(p => p.status === 'archived').length})` : s}
+              </button>
+            ))}
+          </div>
+          {error && <span className="text-xs text-red-600 shrink-0 ml-auto">{error} <button onClick={refetch} className="underline">Retry</button></span>}
         </div>
       </div>
 
-      {/* Table */}
-      <div className="flex-1 overflow-auto p-6">
+      {/* Mobile cards */}
+      <div className="md:hidden flex-1 overflow-auto p-4 space-y-2">
+        {loading
+          ? Array(4).fill(0).map((_, i) => <div key={i} className="h-20 bg-white rounded-xl animate-pulse border border-gray-100" />)
+          : filtered.length === 0
+          ? <p className="text-center text-sm text-gray-400 py-12">No placements found.</p>
+          : filtered.map(p => (
+            <div key={p.id} onClick={() => navigate(`/placements/${p.id}`)}
+              className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 cursor-pointer active:bg-gray-50 transition-colors">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-semibold text-gray-900 truncate">{p.policyholder_name}</p>
+                  <p className="text-xs text-gray-400 font-mono mt-0.5">{p.claim_number || '—'}</p>
+                </div>
+                <span className={`px-2 py-0.5 rounded-md text-xs font-medium capitalize shrink-0 ${STATUS_STYLES[p.status] || STATUS_STYLES.closed}`}>
+                  {p.status}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 mt-2 text-xs text-gray-500 flex-wrap">
+                <span>{p.carrier_name || '—'}</span>
+                <span className="text-gray-300">·</span>
+                <span>In: {fmtDate(p.move_in_date)}</span>
+                {p.ale_expiry_date && <><span className="text-gray-300">·</span><span>ALE: {fmtDate(p.ale_expiry_date)}</span></>}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden md:block flex-1 overflow-auto p-6">
         <div className="table-container">
           <table className="w-full text-sm">
             <thead>

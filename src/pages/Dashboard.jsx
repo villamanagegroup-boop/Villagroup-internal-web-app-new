@@ -39,7 +39,7 @@ export default function Dashboard() {
       <div className="flex-1 overflow-auto p-6 space-y-6">
       {/* Stat Cards Grid */}
       <section>
-        <div className="grid grid-cols-3 gap-4 xl:grid-cols-6">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
           <StatCard
             label="Active Placements"
             value={stats?.activePlacements}
@@ -87,7 +87,7 @@ export default function Dashboard() {
         </div>
       </section>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Action Items */}
         <ActionItems items={actionItems} loading={loading} />
 

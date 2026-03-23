@@ -79,14 +79,15 @@ export default function Billing() {
           <p className="text-sm text-gray-400 mt-0.5">{invoices.length} invoices</p>
         </div>
         <button onClick={() => setShowPanel(true)}
-          className="flex items-center gap-1.5 bg-gradient-to-r from-navy to-navy-500 text-white text-sm font-medium px-3.5 py-2 rounded-lg shadow-sm hover:shadow-md hover:brightness-105 transition-all">
-          <Plus size={15} /> New Invoice
+          className="flex items-center gap-1.5 bg-gradient-to-r from-navy to-navy-500 text-white text-sm font-medium px-3 py-2 rounded-lg shadow-sm hover:shadow-md hover:brightness-105 transition-all">
+          <Plus size={15} />
+          <span className="hidden sm:inline">New Invoice</span>
         </button>
       </div>
 
       {/* Summary strip */}
       {summary && !loading && (
-        <div className="bg-white/50 backdrop-blur-sm border-b border-slate-200/40 px-6 py-3 flex gap-6 shrink-0">
+        <div className="bg-white/50 backdrop-blur-sm border-b border-slate-200/40 px-4 sm:px-6 py-3 flex gap-4 sm:gap-6 shrink-0 overflow-x-auto">
           <Stat label="Outstanding" value={`$${Number(summary.outstanding || 0).toLocaleString()}`} color="text-navy" />
           <Stat label="Overdue" value={`$${Number(summary.overdue || 0).toLocaleString()}`} color={summary.overdue > 0 ? 'text-red-600' : 'text-gray-600'} />
           <Stat label="Collected (30d)" value={`$${Number(summary.collectedThisMonth || 0).toLocaleString()}`} color="text-emerald-600" />
@@ -94,24 +95,51 @@ export default function Billing() {
       )}
 
       {/* Toolbar */}
-      <div className="toolbar flex items-center gap-2">
-        <div className="flex items-center gap-0.5">
-          {STATUSES.map(s => (
-            <button key={s} onClick={() => setStatus(s)}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium capitalize transition-colors ${
-                status === s ? 'bg-navy/8 text-navy' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50/80'
-              }`}>
-              {s === 'all' ? `All (${invoices.length})` : `${s} (${invoices.filter(i => i.status === s).length})`}
-            </button>
-          ))}
-        </div>
-        <div className="ml-auto flex items-center gap-2">
-          {error && <span className="text-xs text-red-600">{error} <button onClick={refetch} className="underline">Retry</button></span>}
+      <div className="toolbar">
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
+          <div className="flex items-center gap-0.5 min-w-max">
+            {STATUSES.map(s => (
+              <button key={s} onClick={() => setStatus(s)}
+                className={`px-3 py-1.5 rounded-md text-sm font-medium capitalize transition-colors whitespace-nowrap ${
+                  status === s ? 'bg-navy/8 text-navy' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50/80'
+                }`}>
+                {s === 'all' ? `All (${invoices.length})` : `${s} (${invoices.filter(i => i.status === s).length})`}
+              </button>
+            ))}
+          </div>
+          {error && <span className="text-xs text-red-600 shrink-0 ml-auto">{error} <button onClick={refetch} className="underline">Retry</button></span>}
         </div>
       </div>
 
-      {/* Table */}
-      <div className="flex-1 overflow-auto p-6">
+      {/* Mobile cards */}
+      <div className="md:hidden flex-1 overflow-auto p-4 space-y-2">
+        {loading
+          ? Array(4).fill(0).map((_, i) => <div key={i} className="h-20 bg-white rounded-xl animate-pulse border border-gray-100" />)
+          : filtered.length === 0
+          ? <p className="text-center text-sm text-gray-400 py-12">{status === 'all' ? 'No invoices yet.' : `No ${status} invoices.`}</p>
+          : filtered.map(inv => (
+            <div key={inv.id} onClick={() => navigate(`/billing/${inv.id}`)}
+              className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 cursor-pointer active:bg-gray-50 transition-colors">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-semibold text-gray-900 truncate">{inv.carrier_tpa_name || '—'}</p>
+                  <p className="text-xs text-gray-400 font-mono mt-0.5">{inv.invoice_number || '—'}</p>
+                </div>
+                <span className={`px-2 py-0.5 rounded-md text-xs font-medium capitalize shrink-0 ${INV_STATUS_STYLES[inv.status] || INV_STATUS_STYLES.draft}`}>
+                  {inv.status}
+                </span>
+              </div>
+              <div className="flex items-center justify-between mt-2">
+                <p className="text-base font-bold text-gray-900">${Number(inv.total || 0).toLocaleString()}</p>
+                <p className="text-xs text-gray-400">Due: {fmtDate(inv.due_date)}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden md:block flex-1 overflow-auto p-6">
         <div className="table-container">
           <table className="w-full text-sm">
             <thead>

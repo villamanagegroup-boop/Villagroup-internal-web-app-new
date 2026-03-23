@@ -71,3 +71,13 @@
     @apply bg-gray-100 text-gray-600 text-xs font-medium px-2 py-0.5 rounded-full;
   }
 }
+
+@layer utilities {
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}

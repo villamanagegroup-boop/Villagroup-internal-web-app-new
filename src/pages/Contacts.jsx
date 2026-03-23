@@ -116,36 +116,80 @@ export default function Contacts() {
           <p className="text-sm text-gray-400 mt-0.5">{contacts.length} {tab.label.toLowerCase()}</p>
         </div>
         <button onClick={() => setShowPanel(true)}
-          className="flex items-center gap-1.5 bg-gradient-to-r from-navy to-navy-500 text-white text-sm font-medium px-3.5 py-2 rounded-lg shadow-sm hover:shadow-md hover:brightness-105 transition-all">
-          <Plus size={15} /> New Contact
+          className="flex items-center gap-1.5 bg-gradient-to-r from-navy to-navy-500 text-white text-sm font-medium px-3 py-2 rounded-lg shadow-sm hover:shadow-md hover:brightness-105 transition-all">
+          <Plus size={15} />
+          <span className="hidden sm:inline">New Contact</span>
         </button>
       </div>
 
       {/* Toolbar */}
-      <div className="toolbar flex items-center gap-4">
-        <div className="flex items-center gap-0.5">
-          {TABS.map(t => (
-            <button key={t.id} onClick={() => setActiveTab(t.id)}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap transition-colors ${
-                activeTab === t.id ? 'bg-navy/8 text-navy' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50/80'
-              }`}>
-              {t.label}
-            </button>
-          ))}
-        </div>
-        <div className="ml-auto flex items-center gap-2">
-          {error && <span className="text-xs text-red-600">{error} <button onClick={refetch} className="underline">Retry</button></span>}
-          <div className="relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input type="text" value={search} onChange={e => setSearch(e.target.value)}
-              placeholder={`Search ${tab.label.toLowerCase()}...`}
-              className="pl-8 pr-3 py-1.5 text-sm border border-gray-200/80 rounded-lg bg-white/70 focus:outline-none focus:ring-2 focus:ring-navy/30 w-56" />
+      <div className="toolbar space-y-2">
+        <div className="flex items-center gap-2">
+          <div className="overflow-x-auto scrollbar-none flex-1">
+            <div className="flex items-center gap-0.5 min-w-max">
+              {TABS.map(t => (
+                <button key={t.id} onClick={() => setActiveTab(t.id)}
+                  className={`px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap transition-colors ${
+                    activeTab === t.id ? 'bg-navy/8 text-navy' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50/80'
+                  }`}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
           </div>
+          <div className="hidden md:flex items-center gap-2 shrink-0">
+            {error && <span className="text-xs text-red-600">{error} <button onClick={refetch} className="underline">Retry</button></span>}
+            <div className="relative">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input type="text" value={search} onChange={e => setSearch(e.target.value)}
+                placeholder={`Search ${tab.label.toLowerCase()}...`}
+                className="pl-8 pr-3 py-1.5 text-sm border border-gray-200/80 rounded-lg bg-white/70 focus:outline-none focus:ring-2 focus:ring-navy/30 w-56" />
+            </div>
+          </div>
+        </div>
+        {/* Mobile search */}
+        <div className="md:hidden relative">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input type="text" value={search} onChange={e => setSearch(e.target.value)}
+            placeholder={`Search ${tab.label.toLowerCase()}...`}
+            className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-200/80 rounded-lg bg-white/70 focus:outline-none focus:ring-2 focus:ring-navy/30" />
         </div>
       </div>
 
-      {/* Table */}
-      <div className="flex-1 overflow-auto p-6">
+      {/* Mobile cards */}
+      <div className="md:hidden flex-1 overflow-auto p-4 space-y-2">
+        {loading
+          ? Array(4).fill(0).map((_, i) => <div key={i} className="h-16 bg-white rounded-xl animate-pulse border border-gray-100" />)
+          : filtered.length === 0
+          ? <p className="text-center text-sm text-gray-400 py-12">{search ? 'No contacts match your search.' : `No ${tab.label.toLowerCase()} yet.`}</p>
+          : filtered.map(c => (
+            <div key={c.id} onClick={() => navigate(`/contacts/${c.id}`)}
+              className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 cursor-pointer active:bg-gray-50 transition-colors">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-semibold text-gray-900 truncate">{c.name || c.company_name || '—'}</p>
+                  {c.company_name && c.name && <p className="text-xs text-gray-400 truncate">{c.company_name}</p>}
+                </div>
+                {c.contact_category && (
+                  <span className="px-2 py-0.5 rounded-md bg-navy/8 text-navy text-xs font-medium shrink-0 capitalize">
+                    {c.contact_category.length > 18 ? c.contact_category.slice(0, 18) + '…' : c.contact_category}
+                  </span>
+                )}
+              </div>
+              {(c.phone || c.email) && (
+                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500 flex-wrap">
+                  {c.phone && <span>{c.phone}</span>}
+                  {c.phone && c.email && <span className="text-gray-300">·</span>}
+                  {c.email && <span className="truncate">{c.email}</span>}
+                </div>
+              )}
+            </div>
+          ))
+        }
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden md:block flex-1 overflow-auto p-6">
         <div className="table-container">
           <table className="w-full text-sm">
             <thead>
