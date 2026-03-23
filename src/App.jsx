@@ -17,6 +17,8 @@ import Reports from './pages/Reports'
 import Archive from './pages/Archive'
 import ResourceHub from './pages/ResourceHub'
 import Settings from './pages/Settings'
+import Tasks from './pages/Tasks'
+import Activity from './pages/Activity'
 
 function RequireAuth({ children }) {
   const { user, loading, needsSetup } = useAuth()
@@ -58,6 +60,8 @@ export default function App() {
             <Route path="reports" element={<Reports />} />
             <Route path="archive" element={<Archive />} />
             <Route path="resource-hub" element={<ResourceHub />} />
+            <Route path="tasks" element={<Tasks />} />
+            <Route path="activity" element={<Activity />} />
             <Route path="settings" element={<Settings />} />
           </Route>
         </Routes>

@@ -1,7 +1,7 @@
 import { useDashboardStats } from '../hooks/useDashboardStats'
 import StatCard from '../components/dashboard/StatCard'
 import ActionItems from '../components/dashboard/ActionItems'
-import RecentActivity from '../components/dashboard/RecentActivity'
+import DashboardTasks from '../components/dashboard/DashboardTasks'
 import InventoryByState from '../components/dashboard/InventoryByState'
 import {
   Users,
@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 
 export default function Dashboard() {
-  const { stats, actionItems, recentActivity, loading, error, refetch } = useDashboardStats()
+  const { stats, actionItems, loading, error, refetch } = useDashboardStats()
 
   if (error) {
     return (
@@ -91,8 +91,8 @@ export default function Dashboard() {
         {/* Action Items */}
         <ActionItems items={actionItems} loading={loading} />
 
-        {/* Recent Activity */}
-        <RecentActivity items={recentActivity} loading={loading} />
+        {/* Your Tasks */}
+        <DashboardTasks />
       </div>
 
       {/* Inventory by State */}

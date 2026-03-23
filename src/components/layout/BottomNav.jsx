@@ -4,15 +4,15 @@ import {
   Users,
   Building2,
   BookUser,
-  Receipt,
+  ClipboardList,
 } from 'lucide-react'
 
 const NAV_ITEMS = [
-  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/placements', icon: Users, label: 'Placements' },
-  { to: '/inventory', icon: Building2, label: 'Inventory' },
-  { to: '/contacts', icon: BookUser, label: 'Contacts' },
-  { to: '/billing', icon: Receipt, label: 'Billing' },
+  { to: '/dashboard',  icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/placements', icon: Users,           label: 'Placements' },
+  { to: '/inventory',  icon: Building2,       label: 'Inventory' },
+  { to: '/contacts',   icon: BookUser,        label: 'Contacts' },
+  { to: '/tasks',      icon: ClipboardList,   label: 'Tasks' },
 ]
 
 export default function BottomNav() {
