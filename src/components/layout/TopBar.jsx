@@ -71,13 +71,19 @@ export default function TopBar() {
             <Menu size={22} />
           </button>
 
-          {/* Brand center */}
+          {/* Page title center */}
           <div className="absolute left-1/2 -translate-x-1/2 text-center pointer-events-none">
-            <p className="font-display font-semibold text-[14px] leading-none text-white">Villa Concierge Co</p>
+            <p className="font-semibold text-[14px] leading-none text-white">{title}</p>
           </div>
 
-          {/* Current page label */}
-          <p className="text-sm font-semibold text-gold">{title}</p>
+          {/* Sign out */}
+          <button
+            onClick={handleSignOut}
+            title="Sign out"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors text-xs font-medium"
+          >
+            <LogOut size={16} />
+          </button>
         </div>
       </header>
 
