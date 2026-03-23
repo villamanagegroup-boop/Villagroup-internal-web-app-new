@@ -165,14 +165,15 @@ export default function TopBar() {
                     {ROLE_LABELS[role] || '—'}
                   </p>
                 </div>
-                <button
-                  onClick={handleSignOut}
-                  title="Sign out"
-                  className="p-1.5 rounded-lg text-white/30 hover:text-white/70 hover:bg-white/8 transition-colors shrink-0"
-                >
-                  <LogOut size={14} />
-                </button>
               </div>
+
+              <button
+                onClick={handleSignOut}
+                className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-white/8 hover:text-red-300 transition-colors mt-1"
+              >
+                <LogOut size={16} strokeWidth={1.75} />
+                Sign Out
+              </button>
             </div>
           </div>
         </div>
